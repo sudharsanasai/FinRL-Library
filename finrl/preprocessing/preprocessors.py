@@ -64,13 +64,12 @@ class FeatureEngineer:
 
     def add_technical_indicator(self, data):
         """
-        calculate technical indicators
+        calcualte technical indicators
         use stockstats package to add technical inidactors
         :param data: (df) pandas dataframe
         :return: (df) pandas dataframe
         """
         df = data.copy()
-        df = df.sort_values(by=['tic','date'])
         stock = Sdf.retype(df.copy())
         unique_ticker = stock.tic.unique()
 
@@ -80,15 +79,12 @@ class FeatureEngineer:
                 try:
                     temp_indicator = stock[stock.tic == unique_ticker[i]][indicator]
                     temp_indicator = pd.DataFrame(temp_indicator)
-                    temp_indicator['tic'] = unique_ticker[i]
-                    temp_indicator['date'] = df[df.tic == unique_ticker[i]]['date'].to_list()
                     indicator_df = indicator_df.append(
                         temp_indicator, ignore_index=True
                     )
                 except Exception as e:
                     print(e)
-            df = df.merge(indicator_df[['tic','date',indicator]],on=['tic','date'],how='left')
-        df = df.sort_values(by=['date','tic'])
+            df[indicator] = indicator_df
         return df
 
     def add_user_defined_feature(self, data):
